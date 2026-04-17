@@ -2,7 +2,10 @@
 
 FloraID es una aplicación web impulsada por Inteligencia Artificial que permite a los usuarios identificar plantas y flores subiendo una fotografía. Además, cuenta con un sistema de registro de usuarios y un historial personal de las plantas que cada usuario ha identificado.
 
+Proyecto desplegado en web https://peachpuff-panther-426004.hostingersite.com/app.html
+
 ## Stack Tecnológico 💻
+
 - **Frontend:** HTML5, CSS3 (Vanilla), JavaScript (Vanilla).
 - **Backend:** Supabase (PostgreSQL, Auth, Edge Functions).
 - **IA de Identificación:** API de Pl@ntNet.
@@ -14,6 +17,7 @@ FloraID es una aplicación web impulsada por Inteligencia Artificial que permite
 Sigue estos pasos para configurar tu propio entorno de desarrollo y hacer un despliegue completo del proyecto desde cero.
 
 ### 1️⃣ Prerequisitos
+
 - Tener instalado [Node.js](https://nodejs.org/) (versión 16+).
 - Tener instalada la [CLI de Supabase](https://supabase.com/docs/guides/cli/getting-started) (`npm install -g supabase`).
 - Crear una cuenta gratuita en [Supabase](https://supabase.com).
@@ -22,6 +26,7 @@ Sigue estos pasos para configurar tu propio entorno de desarrollo y hacer un des
 ---
 
 ### 2️⃣ Configurar la Base de Datos en Supabase
+
 1. Ve al panel principal de Supabase y **crea un nuevo proyecto**.
 2. Una vez creado, ve a la sección **SQL Editor** y ejecuta el siguiente script para crear las tablas necesarias (`profiles` y `identifications`) y las reglas de seguridad (RLS):
 
@@ -84,7 +89,8 @@ create trigger on_auth_user_created
 ---
 
 ### 3️⃣ Desplegar la Supabase Edge Function
-La aplicación utiliza una *Edge Function* para comunicarse de forma segura con la API de PlantNet sin exponer tu clave secreta de PlantNet en el código frontend.
+
+La aplicación utiliza una _Edge Function_ para comunicarse de forma segura con la API de PlantNet sin exponer tu clave secreta de PlantNet en el código frontend.
 
 1. Desde la línea de comandos en la carpeta de tu proyecto, inicializa Supabase si no lo has hecho:
    ```bash
@@ -101,7 +107,7 @@ La aplicación utiliza una *Edge Function* para comunicarse de forma segura con 
 4. Reemplaza el código del archivo en `supabase/functions/identify-plant/index.ts` con el código de la función en TypeScript (el cual utiliza la API Key de PlantNet para manejar la petición). **Nota:** Asegúrate de insertar tu clave de PlantNet (`PLANTNET_API_KEY`) dentro de la función o configurarla como variable de entorno.
 
 5. **Despliega la función a tu proyecto de Supabase**:
-   *(Importante: En la configuración actual usamos `--no-verify-jwt` para procesar la autenticación nosotros mismos mediante el ID del usuario)*
+   _(Importante: En la configuración actual usamos `--no-verify-jwt` para procesar la autenticación nosotros mismos mediante el ID del usuario)_
    ```bash
    supabase functions deploy identify-plant --no-verify-jwt --project-ref TU_PROJECT_REF
    ```
@@ -109,12 +115,13 @@ La aplicación utiliza una *Edge Function* para comunicarse de forma segura con 
 ---
 
 ### 4️⃣ Configurar el Frontend
+
 Abre el archivo `js/supabase.js` en tu editor de código. Debes reemplazar la URL y la llave anónima de tu proyecto de Supabase (las encuentras en Settings -> API dentro de tu panel de Supabase):
 
 ```javascript
 // Reemplaza estos valores con los tuyos
-const SUPABASE_URL = 'https://TU-PROYECTO-AQUI.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbG...TU_LLAVE_AQUI...';
+const SUPABASE_URL = "https://TU-PROYECTO-AQUI.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbG...TU_LLAVE_AQUI...";
 ```
 
 Opcional: Si los correos de validación te limitan temporalmente (error `email rate limit exceeded`), puedes desactivar temporalmente **"Confirm email"** en Supabase -> Authentication -> Providers -> Email.
@@ -122,19 +129,23 @@ Opcional: Si los correos de validación te limitan temporalmente (error `email r
 ---
 
 ### 5️⃣ Probar la aplicación en modo local
+
 Abre la consola en el directorio de tu proyecto y ejecuta el servidor local de desarrollo:
 
 ```bash
 npx -y serve . -l 3000
 ```
+
 Ve a `http://localhost:3000` en tu navegador. ¡La aplicación ya debería estar funcionando en modo local con tu propia base de datos!
 
 ---
 
 ### 6️⃣ Despliegue en Producción (Vercel, Netlify o GitHub Pages)
+
 Debido a que el Frontend de FloraID está compuesto únicamente por código estático (`.html`, `.css`, y `.js` Vanilla), puedes desplegarlo fácilmente y de manera gratuita.
 
 **Con Vercel:**
+
 1. Ve a [Vercel](https://vercel.com/) e inicia sesión con GitHub.
 2. Agrega un "New Project" e importa tu repositorio de GitHub que contiene estos archivos.
 3. Asegúrate que en las opciones la carpeta raíz esté seleccionada. No hay rutinas de compilación en este proyecto estático (`npm run build`), por lo que el Framework Preset debe ser "Other".
