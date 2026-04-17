@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FloraID — Identifica Plantas y Flores al Instante</title>
+  <meta name="description" content="FloraID es tu identificador de plantas y flores con inteligencia artificial. Sube una foto y descubre qué especie es al instante.">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
+</head>
+<body>
+
+  <!-- Auth Container -->
+  <div class="auth-container">
+    <div class="glass-card auth-card animate-fade-in-up">
+
+      <!-- Header -->
+      <div class="auth-header">
+        <span class="logo-icon">🌿</span>
+        <h1>Flora<span style="background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">ID</span></h1>
+        <p>Identifica plantas y flores con IA</p>
+      </div>
+
+      <!-- Alert -->
+      <div id="alert" class="alert"></div>
+
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Iniciar Sesión</button>
+        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Registrarse</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form active" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Correo electrónico</label>
+          <input type="email" id="login-email" class="form-input" placeholder="tu@correo.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="login-password">Contraseña</label>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" required minlength="6" autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" id="login-btn" style="width: 100%;">
+          Iniciar Sesión
+        </button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" class="auth-form" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label class="form-label" for="register-name">Nombre</label>
+          <input type="text" id="register-name" class="form-input" placeholder="Tu nombre" required autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="register-email">Correo electrónico</label>
+          <input type="email" id="register-email" class="form-input" placeholder="tu@correo.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="register-password">Contraseña</label>
+          <input type="password" id="register-password" class="form-input" placeholder="Mínimo 6 caracteres" required minlength="6" autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" id="register-btn" style="width: 100%;">
+          Crear Cuenta
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>🌱 Descubre el mundo botánico</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase JS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Redirect if already logged in
+    Auth.redirectIfAuth();
+
+    // Tab switching
+    function switchTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+
+      document.getElementById(`tab-${tab}`).classList.add('active');
+      document.getElementById(`${tab}-form`).classList.add('active');
+    }
+
+    // Show alert
+    function showAlert(message, type = 'error') {
+      const alert = document.getElementById('alert');
+      alert.textContent = message;
+      alert.className = `alert alert-${type} show`;
+      setTimeout(() => alert.classList.remove('show'), 5000);
+    }
+
+    // Login handler
+    async function handleLogin(e) {
+      e.preventDefault();
+      const btn = document.getElementById('login-btn');
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      try {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Entrando...';
+        await Auth.signIn(email, password);
+        window.location.href = 'app.html';
+      } catch (error) {
+        showAlert(error.message || 'Error al iniciar sesión');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Iniciar Sesión';
+      }
+    }
+
+    // Register handler
+    async function handleRegister(e) {
+      e.preventDefault();
+      const btn = document.getElementById('register-btn');
+      const name = document.getElementById('register-name').value;
+      const email = document.getElementById('register-email').value;
+      const password = document.getElementById('register-password').value;
+
+      try {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Creando cuenta...';
+        await Auth.signUp(email, password, name);
+        showAlert('¡Cuenta creada! Revisa tu correo para confirmar, o inicia sesión directamente.', 'success');
+        switchTab('login');
+      } catch (error) {
+        showAlert(error.message || 'Error al crear la cuenta');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Crear Cuenta';
+      }
+    }
+  </script>
+</body>
+</html>

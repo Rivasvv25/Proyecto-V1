@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FloraID — Mi Historial Botánico</title>
+  <meta name="description" content="Revisa todas las plantas y flores que has identificado con FloraID. Tu colección botánica personal.">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="app.html" class="navbar-brand">
+      <span class="icon">🌿</span>
+      <span>Flora<span class="brand-accent">ID</span></span>
+    </a>
+    <ul class="navbar-nav">
+      <li><a href="app.html">Identificar</a></li>
+      <li><a href="history.html" class="active">Historial</a></li>
+      <li>
+        <button class="btn btn-ghost" id="user-name-btn" title="Mi cuenta">👤</button>
+      </li>
+      <li>
+        <button class="btn btn-secondary btn-sm" onclick="handleLogout()">Salir</button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="page-content">
+    <div class="container">
+
+      <!-- Page Header -->
+      <div class="page-header animate-fade-in">
+        <h1>📚 Mi Historial Botánico</h1>
+        <p>Todas las plantas y flores que has identificado</p>
+      </div>
+
+      <!-- History Grid -->
+      <div id="history-grid" class="history-grid">
+        <!-- Loading state -->
+        <div class="empty-state" style="grid-column: 1 / -1;">
+          <div class="spinner" style="width: 40px; height: 40px; border-width: 3px; border-top-color: var(--accent-primary);"></div>
+          <p style="margin-top: 1rem;">Cargando historial...</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/history.js"></script>
+  <script>
+    // Protect page
+    (async () => {
+      const session = await Auth.requireAuth();
+      if (session) {
+        // Show user name
+        const user = await Auth.getUser();
+        const nameBtn = document.getElementById('user-name-btn');
+        if (nameBtn && user) {
+          const name = user.user_metadata?.display_name || user.email?.split('@')[0] || '👤';
+          nameBtn.textContent = name;
+        }
+
+        // Load history
+        await History.init();
+      }
+    })();
+
+    async function handleLogout() {
+      try {
+        await Auth.signOut();
+        window.location.href = 'index.html';
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  </script>
+</body>
+</html>

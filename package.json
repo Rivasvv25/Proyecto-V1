@@ -1,0 +1,8 @@
+{
+  "name": "floraid",
+  "version": "1.0.0",
+  "description": "FloraID - Identificador de plantas con IA",
+  "scripts": {
+    "start": "npx -y serve ."
+  }
+}
